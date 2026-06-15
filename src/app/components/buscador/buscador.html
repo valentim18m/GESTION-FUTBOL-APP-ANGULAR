@@ -1,0 +1,53 @@
+<div class="container mx-auto p-6 font-sans">
+  <!-- Encabezado -->
+  <header class="text-center mb-10">
+    <h1 class="text-4xl font-extrabold text-yellow-400 drop-shadow-md mb-2">
+      Directorio de Springfield
+    </h1>
+    <p class="text-gray-600">Encuentra a tus personajes favoritos</p>
+  </header>
+
+  <!-- Formulario de Búsqueda y Filtrado -->
+  <div class="flex justify-center mb-10">
+    <div class="relative w-full max-w-lg">
+      <input
+        type="text"
+        [(ngModel)]="terminoBusqueda"
+        (input)="filtrarPersonajes()"
+        placeholder="Buscar personaje (ej. Homero, Bart...)"
+        class="w-full px-5 py-3 border-2 border-yellow-300 rounded-full shadow-sm focus:outline-none focus:ring-4 focus:ring-yellow-200 focus:border-yellow-500 transition-all text-gray-700"
+      />
+    </div>
+  </div>
+
+  <!-- Grilla de Resultados -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <!-- Iteramos sobre el arreglo filtrado -->
+    @for (personaje of personajesFiltrados; track personaje.id) {
+      <div
+        class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col items-center p-4"
+      >
+        <!-- Imagen del personaje -->
+        <div class="h-48 w-full flex justify-center items-center bg-gray-50 rounded-xl mb-4">
+          <img
+            [src]="personaje.image || 'https://via.placeholder.com/150'"
+            [alt]="personaje.name"
+            class="max-h-full object-contain"
+          />
+        </div>
+        <!-- Datos del personaje -->
+        <h2 class="text-xl font-bold text-gray-800 text-center mb-1">{{ personaje.name }}</h2>
+        <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+          {{ personaje.occupation || 'Desconocido' }}
+        </span>
+      </div>
+    } @empty {
+      <!-- Mensaje si no hay resultados -->
+      <div class="col-span-full text-center py-10">
+        <p class="text-2xl text-gray-400 font-semibold">
+          ¡Ay caramba! No encontramos a ese personaje.
+        </p>
+      </div>
+    }
+  </div>
+</div>
