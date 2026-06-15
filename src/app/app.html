@@ -1,0 +1,32 @@
+<!-- Contenedor principal que ocupa al menos toda la altura de la pantalla -->
+<div class="min-h-screen bg-slate-50 flex flex-col font-sans">
+  <!-- Barra de Navegación (Navbar) -->
+  <nav
+    class="bg-yellow-400 shadow-md py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50"
+  >
+    <div
+      routerLink="/"
+      class="text-2xl md:text-3xl font-black text-white drop-shadow-sm cursor-pointer hover:scale-105 transition-transform flex items-center gap-2"
+    >
+      🍩 Directorio Simpson
+    </div>
+    <div
+      class="hidden md:block text-yellow-800 font-semibold bg-yellow-300 px-4 py-2 rounded-full shadow-inner"
+    >
+      Programación V - Examen Final
+    </div>
+  </nav>
+
+  <!-- Contenido Principal (Aquí se inyectan el buscador y los detalles) -->
+  <main class="flex-grow p-4 md:p-8 w-full max-w-7xl mx-auto">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Pie de Página (Footer) -->
+  <footer
+    class="bg-gray-800 text-gray-400 text-center py-6 text-sm mt-auto border-t-4 border-yellow-400"
+  >
+    <p class="font-bold text-gray-300 mb-1">Universidad UCH Champagnat</p>
+    <p>Desarrollado con Angular v21 y TailwindCSS</p>
+  </footer>
+</div>

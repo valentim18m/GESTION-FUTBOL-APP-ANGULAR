@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "gestion-futbol-app-angular": {
+    "app-los-simpsons": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -19,23 +19,14 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
+            "prerender": false,
             "assets": [
               {
                 "glob": "**/*",
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.css"
-            ],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "security": {
-              "allowedHosts": []
-            },
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "styles": ["src/styles.css"]
           },
           "configurations": {
             "production": {
@@ -65,10 +56,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "gestion-futbol-app-angular:build:production"
+              "buildTarget": "app-los-simpsons:build:production"
             },
             "development": {
-              "buildTarget": "gestion-futbol-app-angular:build:development"
+              "buildTarget": "app-los-simpsons:build:development"
             }
           },
           "defaultConfiguration": "development"

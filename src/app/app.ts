@@ -10,5 +10,5 @@ import { BuscadorComponent } from "./components/buscador/buscador";
   styleUrl: './app.css',
 })
 export class App {
-  protected readonly title = signal('gestion-futbol-app-angular');
+  protected readonly title = signal('App-Los-Simpsons');
 }

@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/gestion-futbol-app-angular/browser",
+    "public": "dist/app-los-simpsons/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
