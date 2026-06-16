@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -10,7 +10,7 @@ import { RouterLink } from '@angular/router';
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './buscador.html',
 })
-export class BuscadorComponent implements OnInit {
+export class BuscadorComponent {
   // private apiService = inject(ApiService); // Comentado temporalmente
 
   // 1. Agregamos los personajes manualmente (Mock Data)
@@ -49,19 +49,8 @@ export class BuscadorComponent implements OnInit {
   personajesFiltrados: any[] = [...this.personajes];
   terminoBusqueda: string = '';
 
-  ngOnInit() {
-    // Si la API falla o está incompleta, los datos manuales ya están en pantalla
-    /*
-    this.apiService.getCharacters().subscribe({
-      next: (res: any) => {
-        // En un escenario real con la API descomentamos esto:
-        // this.personajes = res.data || res;
-        // this.personajesFiltrados = this.personajes;
-      },
-      error: (err) => console.error('Error al cargar la API', err)
-    });
-    */
-  }
+
+
 
   filtrarPersonajes() {
     const termino = this.terminoBusqueda.toLowerCase();
