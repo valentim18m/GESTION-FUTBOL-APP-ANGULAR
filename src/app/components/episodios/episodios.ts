@@ -34,8 +34,9 @@ export class EpisodiosComponent implements OnInit {
 
     this.apiService.getEpisodes(this.paginaActual, this.limite).subscribe({
       next: (res: any) => {
-        const lista = res.data ?? res;
-        this.totalEpisodios = res.total ?? lista.length;
+        // La API devuelve { count, next, prev, pages, results: [...] }
+        const lista = Array.isArray(res.results) ? res.results : Array.isArray(res) ? res : [];
+        this.totalEpisodios = res.count ?? lista.length;
         this.episodios = lista;
         this.filtrarEpisodios();
         this.cargando = false;

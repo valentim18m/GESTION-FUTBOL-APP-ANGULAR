@@ -34,8 +34,9 @@ export class LugaresComponent implements OnInit {
 
     this.apiService.getLocations(this.paginaActual, this.limite).subscribe({
       next: (res: any) => {
-        const lista = res.data ?? res;
-        this.totalLugares = res.total ?? lista.length;
+        // La API devuelve { count, next, prev, pages, results: [...] }
+        const lista = Array.isArray(res.results) ? res.results : Array.isArray(res) ? res : [];
+        this.totalLugares = res.count ?? lista.length;
         this.lugares = lista;
         this.filtrarLugares();
         this.cargando = false;

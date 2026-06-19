@@ -34,9 +34,9 @@ export class BuscadorComponent implements OnInit {
 
     this.apiService.getCharacters(this.paginaActual, this.limite).subscribe({
       next: (res: any) => {
-        // La API puede devolver { data: [...] } o el array directamente
-        const lista = res.data ?? res;
-        this.totalPersonajes = res.total ?? lista.length;
+        // La API devuelve { count, next, prev, pages, results: [...] }
+        const lista = Array.isArray(res.results) ? res.results : Array.isArray(res) ? res : [];
+        this.totalPersonajes = res.count ?? lista.length;
         this.personajes = lista;
         this.filtrarPersonajes();
         this.cargando = false;
