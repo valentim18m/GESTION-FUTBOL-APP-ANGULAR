@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Api, Episode } from '../../services/api';
@@ -12,6 +12,7 @@ import { Api, Episode } from '../../services/api';
 })
 export class EpisodiosComponent implements OnInit {
   private apiService = inject(Api);
+  private cdr = inject(ChangeDetectorRef);
 
   episodios: Episode[] = [];
   episodiosFiltrados: Episode[] = [];
@@ -38,13 +39,20 @@ export class EpisodiosComponent implements OnInit {
         const lista = Array.isArray(res.results) ? res.results : Array.isArray(res) ? res : [];
         this.totalEpisodios = res.count ?? lista.length;
         this.episodios = lista;
+
         this.filtrarEpisodios();
+
+        // Apagamos el spinner
         this.cargando = false;
+        // ¡Despertamos a Angular para que muestre las tarjetas!
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar episodios:', err);
         this.error = 'No se pudo conectar con la guía de episodios.';
         this.cargando = false;
+        // También redibujamos la pantalla en caso de error
+        this.cdr.detectChanges();
       },
     });
   }
@@ -53,9 +61,11 @@ export class EpisodiosComponent implements OnInit {
     if (this.temporadaSeleccionada === null) {
       this.episodiosFiltrados = [...this.episodios];
     } else {
-      this.episodiosFiltrados = this.episodios.filter(
-        (e) => e.season === this.temporadaSeleccionada
-      );
+      this.episodiosFiltrados = this.episodios.filter((e) => {
+        // ESCUDO: Protegemos el código por si un episodio viene vacío o corrupto
+        if (!e || typeof e.season === 'undefined') return false;
+        return e.season === this.temporadaSeleccionada;
+      });
     }
   }
 
@@ -69,7 +79,9 @@ export class EpisodiosComponent implements OnInit {
   }
 
   get temporadas(): number[] {
-    const unicos = [...new Set(this.episodios.map((e) => e.season))];
+    // ESCUDO: Evitamos que se rompa el menú si un episodio no tiene temporada asignada
+    const episodiosValidos = this.episodios.filter((e) => e && typeof e.season !== 'undefined');
+    const unicos = [...new Set(episodiosValidos.map((e) => e.season))];
     return unicos.sort((a, b) => a - b);
   }
 

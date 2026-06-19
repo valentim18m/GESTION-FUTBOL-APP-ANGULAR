@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Api, Character } from '../../services/api';
@@ -12,6 +12,7 @@ import { Api, Character } from '../../services/api';
 export class DetallePersonajeComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private apiService = inject(Api);
+  private cdr = inject(ChangeDetectorRef); // <-- 1. Inyectamos el actualizador visual
 
   personaje: Character | null = null;
   cargando: boolean = true;
@@ -27,11 +28,13 @@ export class DetallePersonajeComponent implements OnInit {
           // La API puede devolver { data: {...} } o el objeto directamente
           this.personaje = res.data ?? res;
           this.cargando = false;
+          this.cdr.detectChanges(); // <-- 2. Le decimos a Angular que redibuje la pantalla con los datos
         },
         error: (err) => {
           console.error('Error al cargar el personaje:', err);
           this.error = 'No pudimos encontrar a ese ciudadano de Springfield.';
           this.cargando = false;
+          this.cdr.detectChanges(); // <-- También redibujamos en caso de error para quitar el spinner
         },
       });
     }

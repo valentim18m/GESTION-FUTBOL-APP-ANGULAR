@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -12,6 +12,7 @@ import { Api, Character } from '../../services/api';
 })
 export class BuscadorComponent implements OnInit {
   private apiService = inject(Api);
+  private cdr = inject(ChangeDetectorRef); // <-- 1. Inyectamos el actualizador visual de Angular
 
   personajes: Character[] = [];
   personajesFiltrados: Character[] = [];
@@ -34,17 +35,23 @@ export class BuscadorComponent implements OnInit {
 
     this.apiService.getCharacters(this.paginaActual, this.limite).subscribe({
       next: (res: any) => {
-        // La API devuelve { count, next, prev, pages, results: [...] }
         const lista = Array.isArray(res.results) ? res.results : Array.isArray(res) ? res : [];
         this.totalPersonajes = res.count ?? lista.length;
         this.personajes = lista;
         this.filtrarPersonajes();
-        this.cargando = false;
+
+        this.cargando = false; // Apagamos el estado de carga
+
+        // 2. ¡Magia! Le decimos a Angular explícitamente que redibuje la pantalla
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar personajes:', err);
         this.error = 'No se pudo conectar con Springfield. Intenta de nuevo.';
         this.cargando = false;
+
+        // También redibujamos la pantalla en caso de error para quitar el spinner
+        this.cdr.detectChanges();
       },
     });
   }
@@ -54,9 +61,11 @@ export class BuscadorComponent implements OnInit {
     if (!termino) {
       this.personajesFiltrados = [...this.personajes];
     } else {
-      this.personajesFiltrados = this.personajes.filter((p) =>
-        p.name.toLowerCase().includes(termino)
-      );
+      this.personajesFiltrados = this.personajes.filter((p) => {
+        // Escudo: Si un personaje viene con datos corruptos de internet, lo saltamos
+        if (!p || !p.name) return false;
+        return p.name.toLowerCase().includes(termino);
+      });
     }
   }
 

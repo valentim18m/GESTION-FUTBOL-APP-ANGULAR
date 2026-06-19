@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Api, Location } from '../../services/api';
@@ -12,6 +12,7 @@ import { Api, Location } from '../../services/api';
 })
 export class LugaresComponent implements OnInit {
   private apiService = inject(Api);
+  private cdr = inject(ChangeDetectorRef); // <-- 1. Inyectamos el actualizador visual
 
   lugares: Location[] = [];
   lugaresFiltrados: Location[] = [];
@@ -38,13 +39,17 @@ export class LugaresComponent implements OnInit {
         const lista = Array.isArray(res.results) ? res.results : Array.isArray(res) ? res : [];
         this.totalLugares = res.count ?? lista.length;
         this.lugares = lista;
+
         this.filtrarLugares();
+
         this.cargando = false;
+        this.cdr.detectChanges(); // <-- 2. Despertamos a Angular para que pinte las tarjetas
       },
       error: (err) => {
         console.error('Error al cargar lugares:', err);
         this.error = 'No se pudo cargar el mapa de Springfield.';
         this.cargando = false;
+        this.cdr.detectChanges(); // <-- También redibujamos si falla
       },
     });
   }
@@ -54,11 +59,16 @@ export class LugaresComponent implements OnInit {
     if (!termino) {
       this.lugaresFiltrados = [...this.lugares];
     } else {
-      this.lugaresFiltrados = this.lugares.filter(
-        (l) =>
-          l.name.toLowerCase().includes(termino) ||
-          l.use?.toLowerCase().includes(termino)
-      );
+      this.lugaresFiltrados = this.lugares.filter((l) => {
+        // ESCUDO: Protegemos el código por si un lugar viene vacío o sin nombre
+        if (!l || !l.name) return false;
+
+        // Comprobamos el nombre y también el uso (si es que la API mandó el uso)
+        const coincideNombre = l.name.toLowerCase().includes(termino);
+        const coincideUso = l.use ? l.use.toLowerCase().includes(termino) : false;
+
+        return coincideNombre || coincideUso;
+      });
     }
   }
 
