@@ -1,0 +1,88 @@
+<div class="container mx-auto p-6 font-sans max-w-5xl text-center animate-fade-in">
+  <section
+    class="py-12 px-4 bg-gradient-to-br from-yellow-300 to-yellow-400 rounded-3xl shadow-xl mb-12 flex flex-col items-center border border-yellow-200"
+  >
+    <span class="text-6xl mb-4 drop-shadow-sm">🍩</span>
+    <h1 class="text-4xl md:text-5xl font-black text-white drop-shadow-md mb-4 tracking-tight">
+      ¡Bienvenidos a Springfield!
+    </h1>
+    <p class="text-yellow-950 font-medium text-lg max-w-2xl leading-relaxed">
+      Explora el universo de la serie animada más longeva de la televisión. Esta plataforma te
+      permite consultar información detallada sobre los habitantes de la ciudad, sus locaciones
+      icónicas y la guía de capítulos.
+    </p>
+  </section>
+
+  <h2 class="text-2xl font-black text-gray-800 mb-8 uppercase tracking-wide">
+    ¿Qué puedes explorar?
+  </h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+    <div
+      class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 flex flex-col justify-between hover:shadow-xl transition-all duration-300"
+    >
+      <div>
+        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-2xl mb-4">
+          👥
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Directorio de Ciudadanos</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">
+          Accede al listado completo de personajes. Podrás buscar en tiempo real por nombre, filtrar
+          por ocupación y ver fichas técnicas extendidas.
+        </p>
+      </div>
+      <button
+        routerLink="/personajes"
+        class="mt-6 w-full py-2.5 bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-xl text-sm transition-colors shadow-sm"
+      >
+        Ver Personajes
+      </button>
+    </div>
+
+    <div
+      class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 flex flex-col justify-between hover:shadow-xl transition-all duration-300"
+    >
+      <div>
+        <div
+          class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-2xl mb-4"
+        >
+          🎬
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Guía de Episodios</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">
+          Repasa los capítulos más memorables de la serie organizado por temporadas. Revisa
+          sinopsis, directores y fechas de emisión.
+        </p>
+      </div>
+      <button
+        routerLink="/episodios"
+        class="mt-6 w-full py-2.5 bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-xl text-sm transition-colors shadow-sm"
+      >
+        Ver Episodios
+      </button>
+    </div>
+
+    <div
+      class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 flex flex-col justify-between hover:shadow-xl transition-all duration-300"
+    >
+      <div>
+        <div
+          class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-2xl mb-4"
+        >
+          📍
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Mapa de Locaciones</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">
+          Descubre los puntos geográficos más importantes de Springfield: desde la Planta Nuclear
+          hasta la Taberna de Moe o el Kwik-E-Mart.
+        </p>
+      </div>
+      <button
+        routerLink="/lugares"
+        class="mt-6 w-full py-2.5 bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-xl text-sm transition-colors shadow-sm"
+      >
+        Ver Lugares
+      </button>
+    </div>
+  </div>
+</div>
