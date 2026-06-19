@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-// import { ApiService } from '../../services/api.service'; // Comentado temporalmente
+import { Api, Character } from '../../services/api';
 
 @Component({
   selector: 'app-buscador',
@@ -10,52 +10,75 @@ import { RouterLink } from '@angular/router';
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './buscador.html',
 })
-export class BuscadorComponent {
-  // private apiService = inject(ApiService); // Comentado temporalmente
+export class BuscadorComponent implements OnInit {
+  private apiService = inject(Api);
 
-  // 1. Agregamos los personajes manualmente (Mock Data)
-  personajes: any[] = [
-    {
-      id: 1,
-      name: 'Homer Simpson',
-      occupation: 'Inspector de Seguridad',
-      image:
-        'https://cdn.glitch.com/3c3ffadc-3406-4440-bb95-d40ec8fcde72%2FHomerSimpson.png?1497567511939',
-    },
-    {
-      id: 2,
-      name: 'Marge Simpson',
-      occupation: 'Ama de casa',
-      image:
-        'https://cdn.glitch.com/3c3ffadc-3406-4440-bb95-d40ec8fcde72%2FMargeSimpson.png?1497567512205',
-    },
-    {
-      id: 3,
-      name: 'Bart Simpson',
-      occupation: 'Estudiante',
-      image:
-        'https://cdn.glitch.com/3c3ffadc-3406-4440-bb95-d40ec8fcde72%2FBartSimpson.png?1497567511638',
-    },
-    {
-      id: 4,
-      name: 'Lisa Simpson',
-      occupation: 'Estudiante y Saxofonista',
-      image:
-        'https://cdn.glitch.com/3c3ffadc-3406-4440-bb95-d40ec8fcde72%2FLisaSimpson.png?1497567512083',
-    },
-  ];
-
-  // 2. Inicializamos la lista filtrada con los mismos datos
-  personajesFiltrados: any[] = [...this.personajes];
+  personajes: Character[] = [];
+  personajesFiltrados: Character[] = [];
   terminoBusqueda: string = '';
+  cargando: boolean = true;
+  error: string | null = null;
 
+  // Paginación
+  paginaActual: number = 1;
+  totalPersonajes: number = 0;
+  limite: number = 20;
 
+  ngOnInit() {
+    this.cargarPersonajes();
+  }
 
+  cargarPersonajes() {
+    this.cargando = true;
+    this.error = null;
+
+    this.apiService.getCharacters(this.paginaActual, this.limite).subscribe({
+      next: (res: any) => {
+        // La API puede devolver { data: [...] } o el array directamente
+        const lista = res.data ?? res;
+        this.totalPersonajes = res.total ?? lista.length;
+        this.personajes = lista;
+        this.filtrarPersonajes();
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar personajes:', err);
+        this.error = 'No se pudo conectar con Springfield. Intenta de nuevo.';
+        this.cargando = false;
+      },
+    });
+  }
 
   filtrarPersonajes() {
-    const termino = this.terminoBusqueda.toLowerCase();
-    this.personajesFiltrados = this.personajes.filter((personaje) =>
-      personaje.name.toLowerCase().includes(termino),
-    );
+    const termino = this.terminoBusqueda.toLowerCase().trim();
+    if (!termino) {
+      this.personajesFiltrados = [...this.personajes];
+    } else {
+      this.personajesFiltrados = this.personajes.filter((p) =>
+        p.name.toLowerCase().includes(termino)
+      );
+    }
+  }
+
+  getImagen(personaje: Character): string {
+    return this.apiService.getImageUrl(personaje.portrait_path);
+  }
+
+  paginaSiguiente() {
+    this.paginaActual++;
+    this.terminoBusqueda = '';
+    this.cargarPersonajes();
+  }
+
+  paginaAnterior() {
+    if (this.paginaActual > 1) {
+      this.paginaActual--;
+      this.terminoBusqueda = '';
+      this.cargarPersonajes();
+    }
+  }
+
+  get hayMasPaginas(): boolean {
+    return this.paginaActual * this.limite < this.totalPersonajes;
   }
 }

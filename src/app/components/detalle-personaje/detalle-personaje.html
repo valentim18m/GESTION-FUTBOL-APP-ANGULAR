@@ -1,4 +1,4 @@
-<div class="container mx-auto p-6 font-sans max-w-2xl">
+<div class="container mx-auto p-6 font-sans max-w-3xl">
   <button
     routerLink="/personajes"
     class="mb-6 flex items-center gap-2 text-gray-600 hover:text-yellow-500 font-bold transition-colors cursor-pointer"
@@ -8,56 +8,103 @@
 
   @if (cargando) {
     <div class="flex flex-col items-center justify-center py-20">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400"></div>
+      <div class="animate-spin rounded-full h-14 w-14 border-4 border-yellow-400 border-t-transparent"></div>
       <p class="mt-4 text-gray-500 font-medium">Cargando datos desde Springfield...</p>
     </div>
-  } @else if (personaje) {
-    <div
-      class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center animate-fade-in"
-    >
-      <div
-        class="w-full md:w-1/2 flex justify-center bg-gray-50 rounded-2xl p-6 h-64 items-center border border-gray-100"
+  } @else if (error) {
+    <div class="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-sm">
+      <span class="text-5xl mb-4 block">📡</span>
+      <p class="text-xl text-red-500 font-bold">{{ error }}</p>
+      <button
+        routerLink="/personajes"
+        class="mt-4 text-sm text-yellow-500 font-semibold hover:underline"
       >
-        <img
-          [src]="personaje.image || 'https://via.placeholder.com/200'"
-          [alt]="personaje.name"
-          class="max-h-full object-contain drop-shadow-md hover:scale-105 transition-transform duration-300"
-        />
-      </div>
+        Regresar al buscador principal
+      </button>
+    </div>
+  } @else if (personaje) {
+    <div class="flex flex-col gap-6 animate-fade-in">
 
-      <div class="w-full md:w-1/2 flex flex-col gap-4">
-        <div>
-          <span
-            class="text-xs uppercase font-extrabold tracking-widest text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full"
-          >
-            Ficha del Ciudadano
-          </span>
-          <h1 class="text-3xl font-black text-gray-800 mt-2 tracking-tight">
-            {{ personaje.name }}
-          </h1>
+      <!-- Cabecera: imagen + datos principales -->
+      <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center">
+        <div class="w-full md:w-2/5 flex justify-center bg-gray-50 rounded-2xl p-6 h-64 items-center border border-gray-100 shrink-0">
+          <img
+            [src]="getImagen()"
+            [alt]="personaje.name"
+            class="max-h-full object-contain drop-shadow-md hover:scale-105 transition-transform duration-300"
+            (error)="$any($event.target).src='https://placehold.co/200x200/FCD34D/1F2937?text=?'"
+          />
         </div>
 
-        <div class="border-t border-gray-100"></div>
-
-        <div class="flex flex-col gap-3 text-sm md:text-base">
-          <p class="text-gray-600">
-            <strong class="text-gray-800 font-bold">Ocupación:</strong>
-            {{ personaje.occupation || 'Desconocida' }}
-          </p>
-          <p class="text-gray-600">
-            <strong class="text-gray-800 font-bold">Estado actual:</strong>
-            <span
-              class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 ml-1"
-            >
-              {{ personaje.status || 'Vivo' }}
+        <div class="w-full flex flex-col gap-4">
+          <div>
+            <span class="text-xs uppercase font-extrabold tracking-widest text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">
+              Ficha del Ciudadano
             </span>
-          </p>
-          <p class="text-gray-600">
-            <strong class="text-gray-800 font-bold">Género:</strong>
-            {{ personaje.gender || 'No especificado' }}
-          </p>
+            <h1 class="text-3xl font-black text-gray-800 mt-2 tracking-tight">
+              {{ personaje.name }}
+            </h1>
+          </div>
+
+          <div class="border-t border-gray-100"></div>
+
+          <div class="flex flex-col gap-3 text-sm md:text-base">
+            <p class="text-gray-600">
+              <strong class="text-gray-800 font-bold">Ocupación:</strong>
+              {{ personaje.occupation || 'Desconocida' }}
+            </p>
+            @if (personaje.age) {
+              <p class="text-gray-600">
+                <strong class="text-gray-800 font-bold">Edad:</strong>
+                {{ personaje.age }} años
+              </p>
+            }
+            @if (personaje.birthdate) {
+              <p class="text-gray-600">
+                <strong class="text-gray-800 font-bold">Fecha de nacimiento:</strong>
+                {{ personaje.birthdate }}
+              </p>
+            }
+            <p class="text-gray-600">
+              <strong class="text-gray-800 font-bold">Estado actual:</strong>
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ml-1"
+                [class]="personaje.status === 'Alive' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+              >
+                {{ personaje.status === 'Alive' ? 'Vivo' : (personaje.status || 'Desconocido') }}
+              </span>
+            </p>
+            <p class="text-gray-600">
+              <strong class="text-gray-800 font-bold">Género:</strong>
+              {{ personaje.gender === 'Male' ? 'Masculino' : (personaje.gender === 'Female' ? 'Femenino' : personaje.gender || 'No especificado') }}
+            </p>
+          </div>
         </div>
       </div>
+
+      <!-- Descripción -->
+      @if (personaje.description) {
+        <div class="bg-white rounded-2xl shadow border border-gray-100 p-6">
+          <h2 class="text-lg font-bold text-gray-800 mb-2">📖 Descripción</h2>
+          <p class="text-gray-600 leading-relaxed text-sm">{{ personaje.description }}</p>
+        </div>
+      }
+
+      <!-- Frases célebres -->
+      @if (personaje.phrases && personaje.phrases.length > 0) {
+        <div class="bg-yellow-50 rounded-2xl shadow border border-yellow-100 p-6">
+          <h2 class="text-lg font-bold text-yellow-700 mb-4">💬 Frases célebres</h2>
+          <ul class="flex flex-col gap-2">
+            @for (frase of personaje.phrases; track $index) {
+              <li class="flex items-start gap-2 text-gray-700 text-sm">
+                <span class="text-yellow-500 font-bold mt-0.5">"</span>
+                <span class="italic">{{ frase }}</span>
+                <span class="text-yellow-500 font-bold mt-0.5">"</span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
     </div>
   } @else {
     <div class="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-sm">

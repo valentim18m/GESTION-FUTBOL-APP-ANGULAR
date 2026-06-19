@@ -1,16 +1,97 @@
-<div class="container mx-auto p-6 font-sans text-center">
-  <h1 class="text-4xl font-extrabold text-yellow-400 drop-shadow-md mb-2">
-    📍 Lugares de Springfield
-  </h1>
-  <p class="text-gray-600 mb-8 font-medium">Visita los sitios más emblemáticos de la ciudad</p>
-
-  <div
-    class="bg-white rounded-2xl shadow-md p-8 max-w-md mx-auto border border-gray-100 flex flex-col items-center"
-  >
-    <span class="text-4xl mb-4">🏢</span>
-    <h2 class="text-xl font-bold text-gray-800 mb-2">Próximamente</h2>
-    <p class="text-gray-500 text-sm">
-      Pronto podrás explorar la Planta Nuclear, la Taberna de Moe, el Kwik-E-Mart y más.
-    </p>
+<div class="container mx-auto p-6 font-sans">
+  <div class="text-center mb-8">
+    <h1 class="text-4xl font-extrabold text-yellow-400 drop-shadow-md mb-2">
+      📍 Lugares de Springfield
+    </h1>
+    <p class="text-gray-600 font-medium">Visita los sitios más emblemáticos de la ciudad</p>
   </div>
+
+  @if (cargando) {
+    <div class="flex flex-col items-center justify-center py-20">
+      <div class="animate-spin rounded-full h-14 w-14 border-4 border-yellow-400 border-t-transparent"></div>
+      <p class="mt-4 text-gray-500 font-medium">Explorando Springfield...</p>
+    </div>
+  } @else if (error) {
+    <div class="text-center py-16">
+      <span class="text-5xl block mb-4">🏙️</span>
+      <p class="text-xl text-red-500 font-bold">{{ error }}</p>
+      <button
+        (click)="cargarLugares()"
+        class="mt-4 px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-full transition-all"
+      >
+        Reintentar
+      </button>
+    </div>
+  } @else {
+    <!-- Buscador de lugares -->
+    <div class="max-w-lg mx-auto mb-8">
+      <div class="relative">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔍</span>
+        <input
+          type="text"
+          [(ngModel)]="terminoBusqueda"
+          (ngModelChange)="filtrarLugares()"
+          placeholder="Buscar lugar o tipo..."
+          class="w-full pl-11 pr-4 py-3 rounded-full border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 text-gray-700 bg-white"
+        />
+      </div>
+    </div>
+
+    <!-- Grilla de lugares -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      @for (lugar of lugaresFiltrados; track lugar.id) {
+        <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">
+          <div class="h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+            <img
+              [src]="getImagen(lugar)"
+              [alt]="lugar.name"
+              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              (error)="$any($event.target).src='https://placehold.co/400x250/FCD34D/1F2937?text=🏢'"
+            />
+          </div>
+          <div class="p-4 flex flex-col gap-2 flex-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              @if (lugar.use) {
+                <span class="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                  {{ lugar.use }}
+                </span>
+              }
+              @if (lugar.town) {
+                <span class="text-xs text-gray-400">{{ lugar.town }}</span>
+              }
+            </div>
+            <h2 class="font-bold text-gray-800 text-sm leading-tight">{{ lugar.name }}</h2>
+            <p class="text-xs text-gray-500 leading-relaxed line-clamp-3 flex-1">
+              {{ lugar.description || 'Ubicación emblemática de Springfield.' }}
+            </p>
+          </div>
+        </div>
+      } @empty {
+        <div class="col-span-full text-center py-10">
+          <p class="text-xl text-gray-400 font-semibold">No se encontró ese lugar en Springfield.</p>
+        </div>
+      }
+    </div>
+
+    <!-- Paginación -->
+    @if (!terminoBusqueda) {
+      <div class="flex justify-center items-center gap-4 mt-8">
+        <button
+          (click)="paginaAnterior()"
+          [disabled]="paginaActual === 1"
+          class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-full disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        >
+          ← Anterior
+        </button>
+        <span class="text-gray-600 font-semibold">Página {{ paginaActual }}</span>
+        <button
+          (click)="paginaSiguiente()"
+          [disabled]="!hayMasPaginas"
+          class="px-5 py-2 bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-full disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        >
+          Siguiente →
+        </button>
+      </div>
+    }
+  }
 </div>

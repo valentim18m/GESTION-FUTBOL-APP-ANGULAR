@@ -1,29 +1,69 @@
-@for (personaje of personajesFiltrados; track personaje.id) {
-  <div
-    class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col items-center p-4"
-  >
-    <div class="h-48 w-full flex justify-center items-center bg-gray-50 rounded-xl mb-4">
-      <img
-        [src]="personaje.image || 'https://via.placeholder.com/150'"
-        [alt]="personaje.name"
-        class="max-h-full object-contain"
-      />
-    </div>
-
-    <h2 class="text-xl font-bold text-gray-800 text-center mb-1">{{ personaje.name }}</h2>
-    <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-      {{ personaje.occupation || 'Desconocido' }}
-    </span>
-
+@if (cargando) {
+  <div class="col-span-full flex flex-col items-center justify-center py-20">
+    <div class="animate-spin rounded-full h-14 w-14 border-4 border-yellow-400 border-t-transparent"></div>
+    <p class="mt-4 text-gray-500 font-medium">Cargando ciudadanos de Springfield...</p>
+  </div>
+} @else if (error) {
+  <div class="col-span-full text-center py-16">
+    <span class="text-5xl block mb-4">📡</span>
+    <p class="text-xl text-red-500 font-bold">{{ error }}</p>
     <button
-      [routerLink]="['/personaje', personaje.id]"
-      class="mt-4 px-4 py-2 w-full text-center bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-full text-sm transition-all shadow-sm"
+      (click)="cargarPersonajes()"
+      class="mt-4 px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-full transition-all"
     >
-      Ver detalles
+      Reintentar
     </button>
   </div>
-} @empty {
-  <div class="col-span-full text-center py-10">
-    <p class="text-2xl text-gray-400 font-semibold">¡Ay caramba! No encontramos a ese personaje.</p>
-  </div>
+} @else {
+  @for (personaje of personajesFiltrados; track personaje.id) {
+    <div
+      class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col items-center p-4"
+    >
+      <div class="h-48 w-full flex justify-center items-center bg-gray-50 rounded-xl mb-4">
+        <img
+          [src]="getImagen(personaje)"
+          [alt]="personaje.name"
+          class="max-h-full object-contain"
+          (error)="$any($event.target).src='https://placehold.co/200x200/FCD34D/1F2937?text=?'"
+        />
+      </div>
+
+      <h2 class="text-xl font-bold text-gray-800 text-center mb-1">{{ personaje.name }}</h2>
+      <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full text-center">
+        {{ personaje.occupation || 'Desconocido' }}
+      </span>
+
+      <button
+        [routerLink]="['/personaje', personaje.id]"
+        class="mt-4 px-4 py-2 w-full text-center bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-full text-sm transition-all shadow-sm"
+      >
+        Ver detalles
+      </button>
+    </div>
+  } @empty {
+    <div class="col-span-full text-center py-10">
+      <p class="text-2xl text-gray-400 font-semibold">¡Ay caramba! No encontramos a ese personaje.</p>
+    </div>
+  }
+
+  <!-- Paginación -->
+  @if (!terminoBusqueda) {
+    <div class="col-span-full flex justify-center items-center gap-4 mt-6 pb-4">
+      <button
+        (click)="paginaAnterior()"
+        [disabled]="paginaActual === 1"
+        class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-full disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+      >
+        ← Anterior
+      </button>
+      <span class="text-gray-600 font-semibold">Página {{ paginaActual }}</span>
+      <button
+        (click)="paginaSiguiente()"
+        [disabled]="!hayMasPaginas"
+        class="px-5 py-2 bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-full disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+      >
+        Siguiente →
+      </button>
+    </div>
+  }
 }

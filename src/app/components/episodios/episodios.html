@@ -1,14 +1,101 @@
-<div class="container mx-auto p-6 font-sans text-center">
-  <h1 class="text-4xl font-extrabold text-yellow-400 drop-shadow-md mb-2">🎬 Guía de Episodios</h1>
-  <p class="text-gray-600 mb-8">Explora las temporadas y los capítulos clásicos de la serie</p>
-
-  <div
-    class="bg-white rounded-2xl shadow-md p-8 max-w-md mx-auto border border-gray-100 flex flex-col items-center"
-  >
-    <span class="text-4xl mb-4">📺</span>
-    <h2 class="text-xl font-bold text-gray-800 mb-2">Próximamente</h2>
-    <p class="text-gray-500 text-sm">
-      Módulo en desarrollo para la conexión con el endpoint de capítulos de la API.
-    </p>
+<div class="container mx-auto p-6 font-sans">
+  <div class="text-center mb-8">
+    <h1 class="text-4xl font-extrabold text-yellow-400 drop-shadow-md mb-2">🎬 Guía de Episodios</h1>
+    <p class="text-gray-600">Explora las temporadas y los capítulos clásicos de la serie</p>
   </div>
+
+  @if (cargando) {
+    <div class="flex flex-col items-center justify-center py-20">
+      <div class="animate-spin rounded-full h-14 w-14 border-4 border-yellow-400 border-t-transparent"></div>
+      <p class="mt-4 text-gray-500 font-medium">Sintonizando Springfield...</p>
+    </div>
+  } @else if (error) {
+    <div class="text-center py-16">
+      <span class="text-5xl block mb-4">📺</span>
+      <p class="text-xl text-red-500 font-bold">{{ error }}</p>
+      <button
+        (click)="cargarEpisodios()"
+        class="mt-4 px-6 py-2 bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-full transition-all"
+      >
+        Reintentar
+      </button>
+    </div>
+  } @else {
+    <!-- Filtros por temporada -->
+    @if (temporadas.length > 0) {
+      <div class="flex flex-wrap gap-2 justify-center mb-8">
+        <button
+          (click)="seleccionarTemporada(null)"
+          [class]="temporadaSeleccionada === null
+            ? 'px-4 py-1.5 rounded-full font-bold text-sm bg-yellow-400 text-white shadow'
+            : 'px-4 py-1.5 rounded-full font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200'"
+        >
+          Todas
+        </button>
+        @for (t of temporadas; track t) {
+          <button
+            (click)="seleccionarTemporada(t)"
+            [class]="temporadaSeleccionada === t
+              ? 'px-4 py-1.5 rounded-full font-bold text-sm bg-yellow-400 text-white shadow'
+              : 'px-4 py-1.5 rounded-full font-bold text-sm bg-gray-100 text-gray-600 hover:bg-gray-200'"
+          >
+            T{{ t }}
+          </button>
+        }
+      </div>
+    }
+
+    <!-- Grilla de episodios -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      @for (ep of episodiosFiltrados; track ep.id) {
+        <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">
+          <div class="h-40 bg-gray-50 flex items-center justify-center overflow-hidden">
+            <img
+              [src]="getImagen(ep)"
+              [alt]="ep.name"
+              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              (error)="$any($event.target).src='https://placehold.co/400x225/FCD34D/1F2937?text=📺'"
+            />
+          </div>
+          <div class="p-4 flex flex-col gap-2 flex-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full whitespace-nowrap">
+                T{{ ep.season }} E{{ ep.episode_number }}
+              </span>
+              <span class="text-xs text-gray-400">{{ ep.airdate }}</span>
+            </div>
+            <h2 class="font-bold text-gray-800 text-sm leading-tight line-clamp-2">{{ ep.name }}</h2>
+            <p class="text-xs text-gray-500 leading-relaxed line-clamp-3 flex-1">
+              {{ ep.synopsis || ep.description || 'Sin sinopsis disponible.' }}
+            </p>
+          </div>
+        </div>
+      } @empty {
+        <div class="col-span-full text-center py-10">
+          <p class="text-xl text-gray-400 font-semibold">No hay episodios en esta temporada.</p>
+        </div>
+      }
+    </div>
+
+    <!-- Paginación -->
+    @if (temporadaSeleccionada === null) {
+      <div class="flex justify-center items-center gap-4 mt-8">
+        <button
+          (click)="paginaAnterior()"
+          [disabled]="paginaActual === 1"
+          class="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-full disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        >
+          ← Anterior
+        </button>
+        <span class="text-gray-600 font-semibold">Página {{ paginaActual }}</span>
+        <button
+          (click)="paginaSiguiente()"
+          [disabled]="!hayMasPaginas"
+          class="px-5 py-2 bg-yellow-400 hover:bg-yellow-500 text-white font-bold rounded-full disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+        >
+          Siguiente →
+        </button>
+      </div>
+    }
+  }
 </div>
