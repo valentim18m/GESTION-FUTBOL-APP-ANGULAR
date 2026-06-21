@@ -17,6 +17,10 @@ export class EpisodiosComponent implements OnInit {
   episodios: Episode[] = [];
   episodiosFiltrados: Episode[] = [];
   temporadaSeleccionada: number | null = null;
+
+  // <-- AQUÍ ESTÁ TU NUEVA LÍNEA:
+  terminoBusqueda: string = '';
+
   cargando: boolean = true;
   error: string | null = null;
 
@@ -57,16 +61,20 @@ export class EpisodiosComponent implements OnInit {
     });
   }
 
+  // <-- FUNCIÓN ACTUALIZADA: Ahora combina el buscador de texto + el botón de temporada
   filtrarEpisodios() {
-    if (this.temporadaSeleccionada === null) {
-      this.episodiosFiltrados = [...this.episodios];
-    } else {
-      this.episodiosFiltrados = this.episodios.filter((e) => {
-        // ESCUDO: Protegemos el código por si un episodio viene vacío o corrupto
-        if (!e || typeof e.season === 'undefined') return false;
-        return e.season === this.temporadaSeleccionada;
-      });
-    }
+    const termino = this.terminoBusqueda.toLowerCase().trim();
+
+    this.episodiosFiltrados = this.episodios.filter((e) => {
+      if (!e || typeof e.season === 'undefined') return false;
+
+      const coincideTemporada =
+        this.temporadaSeleccionada === null || e.season === this.temporadaSeleccionada;
+
+      const coincideTexto = !termino || (e.name && e.name.toLowerCase().includes(termino));
+
+      return coincideTemporada && coincideTexto;
+    });
   }
 
   seleccionarTemporada(temporada: number | null) {
