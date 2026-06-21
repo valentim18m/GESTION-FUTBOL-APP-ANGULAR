@@ -50,14 +50,26 @@ export interface ApiListResponse<T> {
 })
 export class Api {
   private baseUrl = 'https://thesimpsonsapi.com/api';
-  readonly imageBaseUrl = 'https://thesimpsonsapi.com';
+
+  // ¡Aquí está el cambio! Ahora apuntamos al CDN oficial que descubriste
+  readonly imageBaseUrl = 'https://cdn.thesimpsonsapi.com';
 
   constructor(private http: HttpClient) {}
 
   /** Construye la URL completa de una imagen a partir del path relativo */
   getImageUrl(path: string | null): string {
-    if (!path) return 'https://placehold.co/200x200/FCD34D/1F2937?text=?';
-    return `${this.imageBaseUrl}${path}`;
+    if (!path) return '';
+
+    // 1. Detectamos qué sección estamos cargando para usar el tamaño que descubriste
+    let carpetaTamano = '500'; // Tamaño por defecto (personajes)
+    if (path.includes('episode')) carpetaTamano = '200';
+    if (path.includes('location')) carpetaTamano = '1280';
+
+    // 2. Nos aseguramos de que la ruta empiece con "/"
+    const pathSeguro = path.startsWith('/') ? path : `/${path}`;
+
+    // 3. Unimos todo: Base CDN + Tamaño + Ruta del archivo
+    return `${this.imageBaseUrl}/${carpetaTamano}${pathSeguro}`;
   }
 
   // --- Personajes ---

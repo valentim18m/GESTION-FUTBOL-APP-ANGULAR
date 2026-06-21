@@ -8,7 +8,9 @@
 
   @if (cargando) {
     <div class="flex flex-col items-center justify-center py-20">
-      <div class="animate-spin rounded-full h-14 w-14 border-4 border-yellow-400 border-t-transparent"></div>
+      <div
+        class="animate-spin rounded-full h-14 w-14 border-4 border-yellow-400 border-t-transparent"
+      ></div>
       <p class="mt-4 text-gray-500 font-medium">Cargando datos desde Springfield...</p>
     </div>
   } @else if (error) {
@@ -24,21 +26,28 @@
     </div>
   } @else if (personaje) {
     <div class="flex flex-col gap-6 animate-fade-in">
-
       <!-- Cabecera: imagen + datos principales -->
-      <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center">
-        <div class="w-full md:w-2/5 flex justify-center bg-gray-50 rounded-2xl p-6 h-64 items-center border border-gray-100 shrink-0">
+      <div
+        class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center"
+      >
+        <div
+          class="w-full md:w-2/5 flex justify-center bg-gray-50 rounded-2xl p-6 h-64 items-center border border-gray-100 shrink-0"
+        >
           <img
             [src]="getImagen()"
-            [alt]="personaje.name"
+            [alt]="personaje?.name"
             class="max-h-full object-contain drop-shadow-md hover:scale-105 transition-transform duration-300"
-            (error)="$any($event.target).src='https://placehold.co/200x200/FCD34D/1F2937?text=?'"
+            (error)="
+              $any($event.target).src = 'https://cdn.thesimpsonsapi.com/500/character/1.webp'
+            "
           />
         </div>
 
         <div class="w-full flex flex-col gap-4">
           <div>
-            <span class="text-xs uppercase font-extrabold tracking-widest text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full">
+            <span
+              class="text-xs uppercase font-extrabold tracking-widest text-yellow-600 bg-yellow-100 px-3 py-1 rounded-full"
+            >
               Ficha del Ciudadano
             </span>
             <h1 class="text-3xl font-black text-gray-800 mt-2 tracking-tight">
@@ -69,14 +78,24 @@
               <strong class="text-gray-800 font-bold">Estado actual:</strong>
               <span
                 class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ml-1"
-                [class]="personaje.status === 'Alive' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                [class]="
+                  personaje.status === 'Alive'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                "
               >
-                {{ personaje.status === 'Alive' ? 'Vivo' : (personaje.status || 'Desconocido') }}
+                {{ personaje.status === 'Alive' ? 'Vivo' : personaje.status || 'Desconocido' }}
               </span>
             </p>
             <p class="text-gray-600">
               <strong class="text-gray-800 font-bold">Género:</strong>
-              {{ personaje.gender === 'Male' ? 'Masculino' : (personaje.gender === 'Female' ? 'Femenino' : personaje.gender || 'No especificado') }}
+              {{
+                personaje.gender === 'Male'
+                  ? 'Masculino'
+                  : personaje.gender === 'Female'
+                    ? 'Femenino'
+                    : personaje.gender || 'No especificado'
+              }}
             </p>
           </div>
         </div>

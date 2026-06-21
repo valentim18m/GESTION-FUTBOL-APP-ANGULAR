@@ -1,6 +1,8 @@
 @if (cargando) {
   <div class="col-span-full flex flex-col items-center justify-center py-20">
-    <div class="animate-spin rounded-full h-14 w-14 border-4 border-yellow-400 border-t-transparent"></div>
+    <div
+      class="animate-spin rounded-full h-14 w-14 border-4 border-yellow-400 border-t-transparent"
+    ></div>
     <p class="mt-4 text-gray-500 font-medium">Cargando ciudadanos de Springfield...</p>
   </div>
 } @else if (error) {
@@ -24,7 +26,7 @@
           [src]="getImagen(personaje)"
           [alt]="personaje.name"
           class="max-h-full object-contain"
-          (error)="$any($event.target).src='https://placehold.co/200x200/FCD34D/1F2937?text=?'"
+          (error)="$any($event.target).src = 'https://cdn.thesimpsonsapi.com/500/character/1.webp'"
         />
       </div>
 
@@ -42,7 +44,9 @@
     </div>
   } @empty {
     <div class="col-span-full text-center py-10">
-      <p class="text-2xl text-gray-400 font-semibold">¡Ay caramba! No encontramos a ese personaje.</p>
+      <p class="text-2xl text-gray-400 font-semibold">
+        ¡Ay caramba! No encontramos a ese personaje.
+      </p>
     </div>
   }
 
