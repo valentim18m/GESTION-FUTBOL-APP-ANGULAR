@@ -106,7 +106,7 @@
       }
     </div>
 
-    @if (temporadaSeleccionada === null) {
+    @if (!terminoBusqueda && temporadaSeleccionada === null) {
       <div class="flex justify-center items-center gap-4 mt-8">
         <button
           (click)="paginaAnterior()"

@@ -38,12 +38,6 @@ export interface Location {
   image_path: string;
 }
 
-export interface ApiListResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -88,17 +82,9 @@ export class Api {
     return this.http.get(`${this.baseUrl}/episodes?page=${page}&limit=${limit}`);
   }
 
-  getEpisodeById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/episodes/${id}`);
-  }
-
   // --- Lugares ---
 
   getLocations(page: number = 1, limit: number = 20): Observable<any> {
     return this.http.get(`${this.baseUrl}/locations?page=${page}&limit=${limit}`);
-  }
-
-  getLocationById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/locations/${id}`);
   }
 }
